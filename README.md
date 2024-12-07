@@ -1,0 +1,5 @@
+# Init App
+
+```
+make init
+```
