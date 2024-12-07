@@ -3,3 +3,7 @@
 ```
 make init
 ```
+
+```
+make run
+```
