@@ -1,0 +1,36 @@
+version: '3'
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - DB_HOST=db-dependencies
+      - DB_USER=root
+      - DB_PASSWORD=password
+      - DB_NAME=test_db
+    depends_on:
+      - db-dependencies
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    networks:
+      - app-network
+
+  db-dependencies:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: test_db
+    volumes:
+      - db-dependencies-data:/var/lib/mysql
+    ports:
+      - "3312:3306"
+    networks:
+      - app-network
+
+volumes:
+  db-dependencies-data:
+
+networks:
+  app-network:
