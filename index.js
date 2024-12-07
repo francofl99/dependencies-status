@@ -2,8 +2,10 @@ const express = require('express');
 const app = express();
 const axios = require('axios');
 
-app.listen(3000, () => {
-  console.log("Server running on port 3000");
+require('dotenv').config();
+
+app.listen(process.env.APP_PORT, () => {
+  console.log(`Server running on port ${process.env.APP_PORT}`);
 });
 
 app.get('/packages/:packageName/latest', async (req, res) => {
