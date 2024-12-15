@@ -41,6 +41,10 @@
 
           for(const dependenciesGroup of dependenciesInChunk) {
             const response = await fetch(`/packages/${encodeURIComponent(dependenciesGroup.join(','))}/latest`);
+
+            const data = await response.json();
+
+            appendLatestsVersionsToPanel({ ...dependencies, ...devDependencies }, data.packages);
           }
         } catch (error) {
           alert('Error parsing package.json file. Please ensure it is valid JSON.');
@@ -60,7 +64,7 @@
       // Add panel header
       const header = document.createElement('div');
       header.className = 'panel-header';
-      header.textContent = title;
+      header.textContent = `${title}: ${Object.keys(items).length}`;
       panel.appendChild(header);
 
       // Create a grid for the squares
@@ -70,11 +74,21 @@
       // Add each dependency as a square
       Object.entries(items).forEach(([name, version]) => {
         const square = document.createElement('div');
+
         square.className = 'square';
         square.innerHTML = `
-          <div class="dependency">${name}</div>
-          <div class="version">${version}</div>
+          <a
+            class="dependency element"
+            target="_blank"
+            href="https://www.npmjs.com/package/${name}"
+          >
+            ${name}
+          </a>
+          <div class="user-version element">Yours: v:${version}</div>
+          <div class="latest-version element"></div>
         `;
+        square.id = `${name}-square`;
+
         grid.appendChild(square);
       });
 
@@ -85,10 +99,29 @@
       output.appendChild(panel);
     }
 
+    function appendLatestsVersionsToPanel(dependencies, latestsVersions) {
+      latestsVersions.forEach(dependency => {
+        const dependencyElement = document.getElementById(`${dependency.package}-square`);
+
+        const [ userVersionElement ] = dependencyElement.getElementsByClassName('user-version');
+        const [ latestVersionElement ] = dependencyElement.getElementsByClassName('latest-version');
+
+        latestVersionElement.innerText = `Latest: v:${dependency.version}`;
+
+        const dependencyStatus = dependencies[dependency.package] === dependency.version
+          ? 'latest'
+          : 'not-latest';
+
+        userVersionElement.classList.add(dependencyStatus);
+      });
+    }
+
     function chunkArray(array) {
+      const limit = 10;
       const result = [];
-      for (let i = 0; i < array.length; i += 20) {
-        const chunk = array.slice(i, i + 20);
+
+      for (let i = 0; i < array.length; i += limit) {
+        const chunk = array.slice(i, i + limit);
         result.push(chunk);
       }
       return result;

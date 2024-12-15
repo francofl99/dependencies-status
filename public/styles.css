@@ -5,8 +5,8 @@ body {
   padding: 0;
 }
 .container {
-  max-width: 800px;
-  margin: 50px auto;
+  max-width: 90%;
+  margin: 20px auto;
   padding: 20px;
   background: #fff;
   border-radius: 8px;
@@ -33,9 +33,10 @@ input[type="file"] {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+  justify-content: center;
 }
 .square {
-  width: calc(25% - 10px); /* Adjust for grid spacing */
+  width: 22%;
   aspect-ratio: 1;
   background-color: #f0f0f0;
   border: 1px solid #ccc;
@@ -55,4 +56,19 @@ input[type="file"] {
 .square .version {
   color: #888;
   font-style: italic;
+}
+
+.element {
+  padding: 5px;
+  border-radius: 10px;
+}
+
+.latest {
+  background-color: rgba(0, 128, 0, 0.4);
+  color: white;
+}
+
+.not-latest {
+  background-color: rgba(255, 0, 0, 0.4);
+  color: white;
 }

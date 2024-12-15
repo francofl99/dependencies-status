@@ -31,7 +31,7 @@ app.get('/packages/:packagesNames/latest', async (req, res) => {
       })
     }
 
-    res.json({ packages });
+    res.status(200).json({ packages });
   } catch (error) {
     console.error('Error fetching package data:', error);
 
