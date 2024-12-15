@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const GetPackageVersion = require('./services/GetPackageVersion');
+const GetPackageVersion = require('../services/GetPackageVersion');
 
 require('dotenv').config();
 
@@ -8,8 +8,10 @@ app.set('view engine', 'ejs');
 app.set('views', './views');
 app.use(express.static('public'));
 
-app.listen(3000, () => {
-  console.log(`Server running on port 3000`);
+const port = process.env.PORT || 4000;
+
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
 });
 
 app.get('/', (_req, res) => {
@@ -38,3 +40,5 @@ app.get('/packages/:packagesNames/latest', async (req, res) => {
     res.status(500).json({ error: 'Error fetching package version' });
   }
 });
+
+module.exports = app;
