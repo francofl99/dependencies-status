@@ -1,36 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Package.json Viewer</title>
-  <link rel="stylesheet" href="/styles.css">
-</head>
-<body>
-  <div class="container">
-    <h1>Upload a package.json File</h1>
-    <input type="file" id="packageFile" accept=".json" />
-    <div id="output">
-      <!-- Dependency Panels will be rendered here -->
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Package.json Viewer</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+
+  <body>
+    <div class="container">
+      <h1>Upload a package.json File</h1>
+
+      <input type="file" id="packageFile" accept=".json" />
+
+      <div id="output"></div>
     </div>
-  </div>
+  </body>
 
   <script>
-    // Handle file input
     document.getElementById('packageFile').addEventListener('change', async (event) => {
       const file = event.target.files[0];
 
       if (file) {
         try {
-          // Read the file
           const text = await file.text();
           const data = JSON.parse(text);
 
-          // Extract dependencies and devDependencies
           const dependencies = data.dependencies || {};
           const devDependencies = data.devDependencies || {};
 
-          // Render the panels
           renderPanel('Dependencies', dependencies);
           renderPanel('Dev Dependencies', devDependencies);
 
@@ -48,30 +46,26 @@
           }
         } catch (error) {
           alert('Error parsing package.json file. Please ensure it is valid JSON.');
+
           console.error(error);
         }
       }
     });
 
-    // Function to render a panel
     function renderPanel(title, items) {
       const output = document.getElementById('output');
 
-      // Create panel container
       const panel = document.createElement('div');
       panel.className = 'panel';
 
-      // Add panel header
       const header = document.createElement('div');
       header.className = 'panel-header';
       header.textContent = `${title}: ${Object.keys(items).length}`;
       panel.appendChild(header);
 
-      // Create a grid for the squares
       const grid = document.createElement('div');
       grid.className = 'grid';
 
-      // Add each dependency as a square
       Object.entries(items).forEach(([name, version]) => {
         const square = document.createElement('div');
 
@@ -93,10 +87,8 @@
         grid.appendChild(square);
       });
 
-      // Append the grid to the panel
       panel.appendChild(grid);
 
-      // Append the panel to the output container
       output.appendChild(panel);
     }
 
@@ -131,5 +123,4 @@
       return result;
     }
   </script>
-</body>
 </html>
