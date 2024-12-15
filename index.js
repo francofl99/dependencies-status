@@ -8,8 +8,8 @@ app.set('view engine', 'ejs');
 app.set('views', './views');
 app.use(express.static('public'));
 
-app.listen(process.env.APP_PORT, () => {
-  console.log(`Server running on port ${process.env.APP_PORT}`);
+app.listen(3000, () => {
+  console.log(`Server running on port 3000`);
 });
 
 app.get('/', (_req, res) => {
