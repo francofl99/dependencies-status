@@ -5,5 +5,5 @@ make init
 ```
 
 ```
-make run
+make up
 ```
