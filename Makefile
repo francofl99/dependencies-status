@@ -7,9 +7,6 @@ init:
 up:
 	@$(DOCKER_COMPOSE) up --build $(SERVICE) -d
 
-run:
-	@$(DOCKER_COMPOSE) exec $(SERVICE) node index.js
-
 down:
 	@$(DOCKER_COMPOSE) down
 
