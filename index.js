@@ -4,8 +4,16 @@ const GetPackageVersion = require('./services/GetPackageVersion');
 
 require('dotenv').config();
 
+app.set('view engine', 'ejs');
+app.set('views', './views');
+app.use(express.static('public'));
+
 app.listen(process.env.APP_PORT, () => {
   console.log(`Server running on port ${process.env.APP_PORT}`);
+});
+
+app.get('/', (_req, res) => {
+  res.render('dependencies', { dependencies: [] });
 });
 
 app.get('/packages/:packagesNames/latest', async (req, res) => {
@@ -23,7 +31,7 @@ app.get('/packages/:packagesNames/latest', async (req, res) => {
       })
     }
 
-    res.json({ packages });
+    res.status(200).json({ packages });
   } catch (error) {
     console.error('Error fetching package data:', error);
 

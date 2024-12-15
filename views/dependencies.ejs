@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Package.json Viewer</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+
+  <body>
+    <div class="container">
+      <h1>Upload a package.json File</h1>
+
+      <input type="file" id="packageFile" accept=".json" />
+
+      <div id="output"></div>
+    </div>
+  </body>
+
+  <script>
+    document.getElementById('packageFile').addEventListener('change', async (event) => {
+      const file = event.target.files[0];
+
+      if (file) {
+        try {
+          const text = await file.text();
+          const data = JSON.parse(text);
+
+          const dependencies = data.dependencies || {};
+          const devDependencies = data.devDependencies || {};
+
+          renderPanel('Dependencies', dependencies);
+          renderPanel('Dev Dependencies', devDependencies);
+
+          const dependenciesInChunk = chunkArray([
+            ...Object.keys(dependencies),
+            ...Object.keys(devDependencies),
+          ]);
+
+          for(const dependenciesGroup of dependenciesInChunk) {
+            const response = await fetch(`/packages/${encodeURIComponent(dependenciesGroup.join(','))}/latest`);
+
+            const data = await response.json();
+
+            appendLatestsVersionsToPanel({ ...dependencies, ...devDependencies }, data.packages);
+          }
+        } catch (error) {
+          alert('Error parsing package.json file. Please ensure it is valid JSON.');
+
+          console.error(error);
+        }
+      }
+    });
+
+    function renderPanel(title, items) {
+      const output = document.getElementById('output');
+
+      const panel = document.createElement('div');
+      panel.className = 'panel';
+
+      const header = document.createElement('div');
+      header.className = 'panel-header';
+      header.textContent = `${title}: ${Object.keys(items).length}`;
+      panel.appendChild(header);
+
+      const grid = document.createElement('div');
+      grid.className = 'grid';
+
+      Object.entries(items).forEach(([name, version]) => {
+        const square = document.createElement('div');
+
+        square.className = 'square';
+        square.innerHTML = `
+          <a
+            class="dependency element"
+            target="_blank"
+            href="https://www.npmjs.com/package/${name}"
+          >
+            ${name}
+          </a>
+          <div class="user-version element">Yours: v:${version}</div>
+          <div class="latest-version element"></div>
+          <div class="loader"></div>
+        `;
+        square.id = `${name}-square`;
+
+        grid.appendChild(square);
+      });
+
+      panel.appendChild(grid);
+
+      output.appendChild(panel);
+    }
+
+    function appendLatestsVersionsToPanel(dependencies, latestsVersions) {
+      latestsVersions.forEach(dependency => {
+        const dependencyElement = document.getElementById(`${dependency.package}-square`);
+
+        const [ userVersionElement ] = dependencyElement.getElementsByClassName('user-version');
+        const [ latestVersionElement ] = dependencyElement.getElementsByClassName('latest-version');
+        const [ loaderElement ] = dependencyElement.getElementsByClassName('loader');
+
+        loaderElement.remove();
+
+        latestVersionElement.innerText = `Latest: v:${dependency.version}`;
+
+        const dependencyStatus = dependencies[dependency.package] === dependency.version
+          ? 'latest'
+          : 'not-latest';
+
+        userVersionElement.classList.add(dependencyStatus);
+      });
+    }
+
+    function chunkArray(array) {
+      const limit = 10;
+      const result = [];
+
+      for (let i = 0; i < array.length; i += limit) {
+        const chunk = array.slice(i, i + limit);
+        result.push(chunk);
+      }
+      return result;
+    }
+  </script>
+</html>
