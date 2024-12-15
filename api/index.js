@@ -1,11 +1,12 @@
 const express = require('express');
 const app = express();
 const GetPackageVersion = require('../services/GetPackageVersion');
+const path = require('path');
 
 require('dotenv').config();
 
 app.set('view engine', 'ejs');
-app.set('views', './views');
+app.set('views', path.join(__dirname, '../views'));
 app.use(express.static('public'));
 
 const port = process.env.PORT || 4000;
