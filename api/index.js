@@ -9,7 +9,9 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '../views'));
 app.use(express.static('public'));
 
-const port = process.env.PORT || 3000;
+// Prefer the environment variable APP_PORT if provided for consistency with the
+// docker-compose and .env configuration. Fallback to PORT and then to 3000.
+const port = process.env.APP_PORT || process.env.PORT || 3000;
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
